@@ -41,4 +41,10 @@ public class CinemaController {
         CinemaEntity updatedCinema = cinemaRepository.save(cinema);
         return new ResponseEntity<>(updatedCinema, HttpStatus.OK);
     }
+
+    @DeleteMapping("/api/cinemas/{id}")
+    public ResponseEntity<Void> deleteCinema(@PathVariable Long id){
+        cinemaRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

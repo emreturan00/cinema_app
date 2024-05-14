@@ -1,9 +1,11 @@
 package org.selfproject.cinema_app.controller;
 
+import org.selfproject.cinema_app.dto.CinemaDTO;
 import org.selfproject.cinema_app.model.CinemaEntity;
-import org.selfproject.cinema_app.model.MovieEntity;
+import org.selfproject.cinema_app.model.CinemaEntity;
 import org.selfproject.cinema_app.repository.CinemaRepository;
-import org.selfproject.cinema_app.repository.MovieRepository;
+import org.selfproject.cinema_app.repository.CinemaRepository;
+import org.selfproject.cinema_app.service.CinemaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,36 +17,44 @@ import java.util.List;
 public class CinemaController {
 
     private final CinemaRepository cinemaRepository;
-    private final MovieRepository movieRepository;
-    CinemaController(CinemaRepository cinemaRepository, MovieRepository movieRepository){
-        this.cinemaRepository = cinemaRepository;
-        this.movieRepository = movieRepository;
-    }
+    private final CinemaService cinemaService;
 
-    @GetMapping("/api/getCinemas")
-    public List<CinemaEntity> getCinemas(){
-        List<CinemaEntity> cinemas = cinemaRepository.findAll();
-        return cinemas;
+    CinemaController(CinemaRepository cinemaRepository, CinemaService cinemaService){
+        this.cinemaRepository = cinemaRepository;
+        this.cinemaService = cinemaService;
     }
 
     @PostMapping("/api/cinemas")
-    public ResponseEntity<CinemaEntity> postCinema(@RequestBody CinemaEntity cinemaEntity){
-        CinemaEntity createdCinema = cinemaRepository.save(cinemaEntity);
-        return new ResponseEntity<>(createdCinema, HttpStatus.CREATED);
+    public ResponseEntity<CinemaDTO> postCinema(@RequestBody CinemaDTO cinemaDTO){
+        return new ResponseEntity<>(cinemaService.saveCinema(cinemaDTO),HttpStatus.CREATED);
     }
 
-    @PutMapping("/api/cinemas/{cinemaId}/movies/{movieId}")
-    public ResponseEntity<CinemaEntity> addMovieToCinema(@PathVariable Long cinemaId, @PathVariable Long movieId){
-        CinemaEntity cinema = cinemaRepository.findById(cinemaId).get();
-        MovieEntity movie = movieRepository.findById(movieId).get();
-        cinema.getPlayingMovies().add(movie);
-        CinemaEntity updatedCinema = cinemaRepository.save(cinema);
-        return new ResponseEntity<>(updatedCinema, HttpStatus.OK);
+    @PutMapping("/api/cinemas/{id}")
+    public ResponseEntity<CinemaDTO> updateCinema(@PathVariable Long id, @RequestBody CinemaDTO cinemaDTO){
+        return cinemaService.updateCinema(cinemaDTO,id).map(updatedCinema->new ResponseEntity<>(updatedCinema,HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+
+    @GetMapping("api/cinemas")
+    public ResponseEntity<List<CinemaDTO>> getCinemas(){
+        return new ResponseEntity<>(cinemaService.getAllCinemas(),HttpStatus.OK);
+    }
+
 
     @DeleteMapping("/api/cinemas/{id}")
     public ResponseEntity<Void> deleteCinema(@PathVariable Long id){
         cinemaRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+//    @PostMapping("/api/cinemas/{cinemaId}/movies/{movieId}")
+//    public ResponseEntity<CinemaDTO> addMovieToCinema(@PathVariable Long cinemaId, @PathVariable Long movieId) {
+//        return new ResponseEntity<>(cinemaService.addMovieToCinema(cinemaId, movieId), HttpStatus.OK);
+//    }
+//
+//    @DeleteMapping("/api/cinemas/{cinemaId}/movies/{movieId}")
+//    public ResponseEntity<CinemaDTO> removeMovieFromCinema(@PathVariable Long cinemaId, @PathVariable Long movieId) {
+//        return new ResponseEntity<>(cinemaService.removeMovieFromCinema(cinemaId, movieId), HttpStatus.OK);
+//    }
 }

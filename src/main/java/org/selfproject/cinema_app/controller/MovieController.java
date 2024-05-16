@@ -17,6 +17,8 @@ import java.awt.image.RescaleOp;
 import java.util.List;
 import java.util.Optional;
 
+
+@CrossOrigin(origins="http://localhost:3000")
 @RestController
 public class MovieController {
 
@@ -30,7 +32,7 @@ public class MovieController {
 
     @PostMapping("/api/movies")
     public ResponseEntity<MovieDTO> postMovie(@RequestBody MovieDTO movieDTO){
-        return new ResponseEntity<>(movieService.saveMovie(movieDTO),HttpStatus.CREATED);
+        return new ResponseEntity<>(movieService.postMovie(movieDTO),HttpStatus.CREATED);
     }
 
     @PutMapping("/api/movies/{id}")

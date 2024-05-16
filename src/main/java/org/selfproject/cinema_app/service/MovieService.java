@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Service
 public class MovieService {
     private final MovieRepository movieRepository;
@@ -29,7 +30,7 @@ public class MovieService {
 
     }
 
-    public MovieDTO saveMovie(MovieDTO movieDTO){
+    public MovieDTO postMovie(MovieDTO movieDTO){
         MovieEntity movieEntity = movieRepository.save(movieMapper.toEntity(movieDTO));
         return movieMapper.toDTO(movieEntity);
     }

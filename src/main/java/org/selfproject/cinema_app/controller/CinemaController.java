@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/cinemas")
 public class CinemaController {
 
     private final CinemaRepository cinemaRepository;
@@ -24,25 +25,25 @@ public class CinemaController {
         this.cinemaService = cinemaService;
     }
 
-    @PostMapping("/api/cinemas")
+    @PostMapping
     public ResponseEntity<CinemaDTO> postCinema(@RequestBody CinemaDTO cinemaDTO){
         return new ResponseEntity<>(cinemaService.saveCinema(cinemaDTO),HttpStatus.CREATED);
     }
 
-    @PutMapping("/api/cinemas/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<CinemaDTO> updateCinema(@PathVariable Long id, @RequestBody CinemaDTO cinemaDTO){
         return cinemaService.updateCinema(cinemaDTO,id).map(updatedCinema->new ResponseEntity<>(updatedCinema,HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 
-    @GetMapping("api/cinemas")
+    @GetMapping
     public ResponseEntity<List<CinemaDTO>> getCinemas(){
         return new ResponseEntity<>(cinemaService.getAllCinemas(),HttpStatus.OK);
     }
 
 
-    @DeleteMapping("/api/cinemas/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCinema(@PathVariable Long id){
         cinemaRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
